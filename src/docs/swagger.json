@@ -17,6 +17,10 @@
         {
             "url": "http://localhost:8080",
             "description": "Local development server"
+        },
+        {
+            "url": "https://personal-finance-tracker-api-4n2c.onrender.com",
+            "description": "Render live server"
         }
     ],
     "tags": [
