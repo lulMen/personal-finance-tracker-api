@@ -1,0 +1,7 @@
+https://jsoneditoronline.org - create valid json data
+https://roger13.github.io/SwagDefGen/ - convert json to swagger yaml schema
+https://app.swaggerhub.com/home - top down, design swagger api documentation
+https://transform.tools/json-to-mongoose - create mongoose schema from json
+https://github.com/lulMen/personal-finance-tracker-api - github repo
+https://trello.com/b/66UpXXTB/personal-finance-tracker-api - trello
+https://docs.google.com/document/d/1d4Y1HGkQugjeEjNp5rxW-4DnhSqCBEwrQPd4HeF5AAo/edit?tab=t.0 - project proposal
