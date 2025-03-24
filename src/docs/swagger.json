@@ -2,6 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "title": "Personal Finance Tracker API",
+        "version": "1.0.0",
         "description": "API for managing personal finances including user authentication via OAuth, transaction management,\ncategory management, budgeting, and reporting. Role-based access is enforced so that users can only access their own data.\n",
         "termsOfService": "http://example.com/terms/",
         "contact": {
@@ -10,17 +11,16 @@
         "license": {
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
-        "version": "1.0.0"
+        }
     },
     "servers": [
         {
-            "url": "http://localhost:8080",
-            "description": "Local development server"
+            "description": "Local host testing",
+            "url": "http://localhost:8080"
         },
         {
-            "url": "https://personal-finance-tracker-api-4n2c.onrender.com",
-            "description": "Render live server"
+            "description": "Render live server",
+            "url": "https://personal-finance-tracker-api-4n2c.onrender.com"
         }
     ],
     "tags": [
@@ -52,17 +52,17 @@
                     "user"
                 ],
                 "summary": "Register a new user",
-                "description": "Register a new user via OAuth. The OAuth provider handles authentication, and the API registers the user\nwith role-based data.\n",
                 "operationId": "signupUser",
+                "description": "Register a new user via OAuth. The OAuth provider handles authentication, and the API registers the user\nwith role-based data.\n",
                 "requestBody": {
+                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "$ref": "#/components/schemas/UserSignup"
                             }
                         }
-                    },
-                    "required": true
+                    }
                 },
                 "responses": {
                     "201": {
@@ -87,17 +87,17 @@
                     "user"
                 ],
                 "summary": "Authenticate user and issue JWT",
-                "description": "Authenticate the user via OAuth and return a JSON Web Token (JWT) containing role information. The token is used\nto ensure users only access their own data.\n",
                 "operationId": "loginUser",
+                "description": "Authenticate the user via OAuth and return a JSON Web Token (JWT) containing role information. The token is used\nto ensure users only access their own data.\n",
                 "requestBody": {
+                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "$ref": "#/components/schemas/UserLogin"
                             }
                         }
-                    },
-                    "required": true
+                    }
                 },
                 "responses": {
                     "200": {
@@ -105,7 +105,13 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/inline_response_200"
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "description": "JWT token."
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -122,8 +128,8 @@
                     "user"
                 ],
                 "summary": "Logout user",
-                "description": "Invalidate the user’s session or JWT token.",
                 "operationId": "logoutUser",
+                "description": "Invalidate the user’s session or JWT token.",
                 "responses": {
                     "200": {
                         "description": "Successfully logged out."
@@ -137,8 +143,13 @@
                     "user"
                 ],
                 "summary": "Retrieve authenticated user profile",
-                "description": "Retrieve the profile of the authenticated user.",
                 "operationId": "getUserProfile",
+                "description": "Retrieve the profile of the authenticated user.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "User profile retrieved successfully.",
@@ -153,29 +164,29 @@
                     "401": {
                         "description": "Unauthorized."
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "put": {
                 "tags": [
                     "user"
                 ],
                 "summary": "Update authenticated user profile",
-                "description": "Update the profile information for the authenticated user.",
                 "operationId": "updateUserProfile",
+                "description": "Update the profile information for the authenticated user.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "requestBody": {
+                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "$ref": "#/components/schemas/UserUpdate"
                             }
                         }
-                    },
-                    "required": true
+                    }
                 },
                 "responses": {
                     "200": {
@@ -194,20 +205,20 @@
                     "401": {
                         "description": "Unauthorized."
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "delete": {
                 "tags": [
                     "user"
                 ],
                 "summary": "Delete authenticated user account",
-                "description": "Delete the account of the authenticated user. This action is irreversible.",
                 "operationId": "deleteUserProfile",
+                "description": "Delete the account of the authenticated user. This action is irreversible.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "User account deleted successfully."
@@ -215,12 +226,7 @@
                     "401": {
                         "description": "Unauthorized."
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/transactions": {
@@ -229,8 +235,13 @@
                     "transaction"
                 ],
                 "summary": "Retrieve a list of user transactions",
-                "description": "Retrieve all transactions for the authenticated user.",
                 "operationId": "getTransactions",
+                "description": "Retrieve all transactions for the authenticated user.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of transactions retrieved.",
@@ -248,29 +259,29 @@
                     "401": {
                         "description": "Unauthorized."
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "post": {
                 "tags": [
                     "transaction"
                 ],
                 "summary": "Create a new transaction",
-                "description": "Create a new financial transaction.",
                 "operationId": "createTransaction",
+                "description": "Create a new financial transaction.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "requestBody": {
+                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "$ref": "#/components/schemas/TransactionInput"
                             }
                         }
-                    },
-                    "required": true
+                    }
                 },
                 "responses": {
                     "201": {
@@ -289,152 +300,7 @@
                     "401": {
                         "description": "Unauthorized."
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/transactions/{transactionId}": {
-            "get": {
-                "tags": [
-                    "transaction"
-                ],
-                "summary": "Retrieve a single transaction by ID",
-                "description": "Retrieve details of a specific transaction.",
-                "operationId": "getTransactionById",
-                "parameters": [
-                    {
-                        "name": "transactionId",
-                        "in": "path",
-                        "description": "ID of the transaction.",
-                        "required": true,
-                        "style": "simple",
-                        "explode": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Transaction details retrieved.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Transaction"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized."
-                    },
-                    "404": {
-                        "description": "Transaction not found."
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "put": {
-                "tags": [
-                    "transaction"
-                ],
-                "summary": "Update an existing transaction",
-                "description": "Update details of a specific transaction.",
-                "operationId": "updateTransaction",
-                "parameters": [
-                    {
-                        "name": "transactionId",
-                        "in": "path",
-                        "description": "ID of the transaction.",
-                        "required": true,
-                        "style": "simple",
-                        "explode": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/TransactionInput"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "200": {
-                        "description": "Transaction updated successfully.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Transaction"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input."
-                    },
-                    "401": {
-                        "description": "Unauthorized."
-                    },
-                    "404": {
-                        "description": "Transaction not found."
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "transaction"
-                ],
-                "summary": "Remove a transaction",
-                "description": "Delete a transaction by its ID.",
-                "operationId": "deleteTransaction",
-                "parameters": [
-                    {
-                        "name": "transactionId",
-                        "in": "path",
-                        "description": "ID of the transaction.",
-                        "required": true,
-                        "style": "simple",
-                        "explode": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Transaction deleted successfully."
-                    },
-                    "401": {
-                        "description": "Unauthorized."
-                    },
-                    "404": {
-                        "description": "Transaction not found."
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/categories": {
@@ -443,8 +309,13 @@
                     "category"
                 ],
                 "summary": "List all categories",
-                "description": "Retrieve all available categories.",
                 "operationId": "getCategories",
+                "description": "Retrieve all available categories.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Categories retrieved successfully.",
@@ -462,53 +333,7 @@
                     "401": {
                         "description": "Unauthorized."
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "post": {
-                "tags": [
-                    "category"
-                ],
-                "summary": "Add a new category",
-                "description": "Add a new category (admin or user-defined).",
-                "operationId": "createCategory",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CategoryInput"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "201": {
-                        "description": "Category created successfully.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Category"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input."
-                    },
-                    "401": {
-                        "description": "Unauthorized."
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/budgets": {
@@ -517,8 +342,13 @@
                     "budget"
                 ],
                 "summary": "Retrieve current budget setups for a user",
-                "description": "Retrieve all budget records for the authenticated user.",
                 "operationId": "getBudgets",
+                "description": "Retrieve all budget records for the authenticated user.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Budgets retrieved successfully.",
@@ -536,133 +366,7 @@
                     "401": {
                         "description": "Unauthorized."
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "post": {
-                "tags": [
-                    "budget"
-                ],
-                "summary": "Create a new budget record",
-                "description": "Create a new budget record.",
-                "operationId": "createBudget",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/BudgetInput"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "201": {
-                        "description": "Budget created successfully.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Budget"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid input."
-                    },
-                    "401": {
-                        "description": "Unauthorized."
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/budgets/{budgetId}": {
-            "put": {
-                "tags": [
-                    "budget"
-                ],
-                "summary": "Update an existing budget",
-                "description": "Update details of a budget record.",
-                "operationId": "updateBudget",
-                "parameters": [
-                    {
-                        "name": "budgetId",
-                        "in": "path",
-                        "description": "ID of the budget.",
-                        "required": true,
-                        "style": "simple",
-                        "explode": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/BudgetInput"
-                            }
-                        }
-                    },
-                    "required": true
-                },
-                "responses": {
-                    "default": {
-                        "description": "Budget updated successfully."
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "budget"
-                ],
-                "summary": "Delete a budget record",
-                "description": "Delete a specific budget record.",
-                "operationId": "deleteBudget",
-                "parameters": [
-                    {
-                        "name": "budgetId",
-                        "in": "path",
-                        "description": "ID of the budget.",
-                        "required": true,
-                        "style": "simple",
-                        "explode": false,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Budget deleted successfully."
-                    },
-                    "401": {
-                        "description": "Unauthorized."
-                    },
-                    "404": {
-                        "description": "Budget not found."
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/reports/monthly": {
@@ -671,8 +375,13 @@
                     "report"
                 ],
                 "summary": "Generate a monthly spending report",
-                "description": "Generate a report summarizing monthly spending for the authenticated user.",
                 "operationId": "getMonthlyReport",
+                "description": "Generate a report summarizing monthly spending for the authenticated user.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Monthly report generated successfully.",
@@ -687,71 +396,37 @@
                     "401": {
                         "description": "Unauthorized."
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
-        "/reports/categories": {
-            "get": {
-                "tags": [
-                    "report"
-                ],
-                "summary": "Breakdown of spending by category",
-                "description": "Generate a report breaking down spending by category.",
-                "operationId": "getCategoryReport",
-                "responses": {
-                    "200": {
-                        "description": "Category report generated successfully.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/CategoryReport"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized."
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             }
         }
     },
     "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        },
         "schemas": {
             "UserSignup": {
-                "required": [
-                    "oauthProvider",
-                    "oauthToken"
-                ],
                 "type": "object",
                 "properties": {
                     "oauthProvider": {
                         "type": "string",
-                        "description": "OAuth provider used for registration.",
                         "example": "google"
                     },
                     "oauthToken": {
                         "type": "string",
-                        "description": "OAuth token received from the provider.",
                         "example": "sample_oauth_token"
                     }
-                }
+                },
+                "required": [
+                    "oauthProvider",
+                    "oauthToken"
+                ]
             },
             "UserLogin": {
-                "required": [
-                    "oauthProvider",
-                    "oauthToken"
-                ],
                 "type": "object",
                 "properties": {
                     "oauthProvider": {
@@ -762,7 +437,11 @@
                         "type": "string",
                         "example": "sample_oauth_token"
                     }
-                }
+                },
+                "required": [
+                    "oauthProvider",
+                    "oauthToken"
+                ]
             },
             "UserUpdate": {
                 "type": "object",
@@ -774,21 +453,10 @@
                     "name": {
                         "type": "string",
                         "example": "John Doe"
-                    },
-                    "role": {
-                        "type": "string",
-                        "example": "user"
                     }
-                },
-                "description": "Fields that can be updated for the user."
+                }
             },
             "User": {
-                "required": [
-                    "email",
-                    "id",
-                    "name",
-                    "role"
-                ],
                 "type": "object",
                 "properties": {
                     "id": {
@@ -805,20 +473,21 @@
                     },
                     "role": {
                         "type": "string",
-                        "description": "The user's role for access control.",
                         "example": "user"
+                    },
+                    "token": {
+                        "type": "string",
+                        "example": ""
                     }
-                }
+                },
+                "required": [
+                    "id",
+                    "email",
+                    "name",
+                    "role"
+                ]
             },
             "Transaction": {
-                "required": [
-                    "amount",
-                    "category",
-                    "date",
-                    "id",
-                    "transactionType",
-                    "userId"
-                ],
                 "type": "object",
                 "properties": {
                     "id": {
@@ -854,15 +523,17 @@
                         "type": "string",
                         "example": "Expense"
                     }
-                }
+                },
+                "required": [
+                    "id",
+                    "userId",
+                    "amount",
+                    "date",
+                    "category",
+                    "transactionType"
+                ]
             },
             "TransactionInput": {
-                "required": [
-                    "amount",
-                    "category",
-                    "date",
-                    "transactionType"
-                ],
                 "type": "object",
                 "properties": {
                     "amount": {
@@ -890,73 +561,53 @@
                         "type": "string",
                         "example": "Expense"
                     }
-                }
-            },
-            "Category": {
-                "required": [
-                    "id",
-                    "name",
-                    "type"
-                ],
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string",
-                        "example": "cat001"
-                    },
-                    "name": {
-                        "type": "string",
-                        "example": "Groceries"
-                    },
-                    "type": {
-                        "type": "string",
-                        "example": "Expense"
-                    }
-                }
-            },
-            "CategoryInput": {
-                "required": [
-                    "name",
-                    "type"
-                ],
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "example": "Groceries"
-                    },
-                    "type": {
-                        "type": "string",
-                        "example": "Expense"
-                    }
-                }
-            },
-            "Budget": {
+                },
                 "required": [
                     "amount",
+                    "date",
                     "category",
-                    "endDate",
-                    "id",
-                    "startDate",
-                    "userId"
-                ],
+                    "transactionType"
+                ]
+            },
+            "Category": {
                 "type": "object",
                 "properties": {
                     "id": {
                         "type": "string",
-                        "example": "bud001"
+                        "example": "cat123"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Groceries"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Expenses related to food and groceries"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name"
+                ]
+            },
+            "Budget": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "example": "budget123"
                     },
                     "userId": {
                         "type": "string",
                         "example": "user123"
                     },
-                    "amount": {
-                        "type": "number",
-                        "example": 500
-                    },
                     "category": {
                         "type": "string",
                         "example": "Groceries"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "example": 500
                     },
                     "startDate": {
                         "type": "string",
@@ -968,92 +619,37 @@
                         "format": "date",
                         "example": "2025-03-31"
                     }
-                }
-            },
-            "BudgetInput": {
+                },
                 "required": [
-                    "amount",
+                    "id",
+                    "userId",
                     "category",
-                    "endDate",
-                    "startDate"
-                ],
-                "type": "object",
-                "properties": {
-                    "amount": {
-                        "type": "number",
-                        "example": 500
-                    },
-                    "category": {
-                        "type": "string",
-                        "example": "Groceries"
-                    },
-                    "startDate": {
-                        "type": "string",
-                        "format": "date",
-                        "example": "2025-03-01"
-                    },
-                    "endDate": {
-                        "type": "string",
-                        "format": "date",
-                        "example": "2025-03-31"
-                    }
-                }
+                    "amount",
+                    "startDate",
+                    "endDate"
+                ]
             },
             "MonthlyReport": {
-                "required": [
-                    "month",
-                    "totalSpending"
-                ],
                 "type": "object",
                 "properties": {
-                    "month": {
-                        "type": "string",
-                        "example": "2025-03"
-                    },
-                    "totalSpending": {
+                    "totalIncome": {
                         "type": "number",
-                        "example": 1200
+                        "example": 5000
                     },
-                    "transactions": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Transaction"
-                        }
-                    }
-                }
-            },
-            "CategoryReport": {
-                "required": [
-                    "category",
-                    "totalSpending"
-                ],
-                "type": "object",
-                "properties": {
-                    "category": {
-                        "type": "string",
-                        "example": "Groceries"
-                    },
-                    "totalSpending": {
+                    "totalExpense": {
                         "type": "number",
-                        "example": 400
+                        "example": 3500
+                    },
+                    "netSavings": {
+                        "type": "number",
+                        "example": 1500
                     }
-                }
-            },
-            "inline_response_200": {
-                "type": "object",
-                "properties": {
-                    "token": {
-                        "type": "string",
-                        "description": "JWT token."
-                    }
-                }
-            }
-        },
-        "securitySchemes": {
-            "bearerAuth": {
-                "type": "http",
-                "scheme": "bearer",
-                "bearerFormat": "JWT"
+                },
+                "required": [
+                    "totalIncome",
+                    "totalExpense",
+                    "netSavings"
+                ]
             }
         }
     }
