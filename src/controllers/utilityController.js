@@ -38,4 +38,3 @@ const exchangeToken = asyncHandler(async (req, res) => {
 });
 
 module.exports = { exchangeToken, };
-// app.get('/oauth2callback', );
