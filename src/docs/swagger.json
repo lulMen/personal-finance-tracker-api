@@ -498,6 +498,137 @@
                         "description": "Unauthorized."
                     }
                 }
+            },
+            "post": {
+                "tags": [
+                    "budget"
+                ],
+                "summary": "Create a new budget",
+                "operationId": "createBudget",
+                "description": "Allows authenticated users to create a new budget record.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BudgetInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Budget created successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BudgetInput"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input."
+                    },
+                    "401": {
+                        "description": "Unauthorized."
+                    }
+                }
+            }
+        },
+        "/budgets/{id}": {
+            "put": {
+                "tags": [
+                    "budget"
+                ],
+                "summary": "Update an existing budget",
+                "operationId": "updateBudget",
+                "description": "Allows authenticated users to update their budget by ID.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BudgetInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Budget updated successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BudgetInput"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input."
+                    },
+                    "404": {
+                        "description": "Budget not found."
+                    },
+                    "401": {
+                        "description": "Unauthorized."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "budget"
+                ],
+                "summary": "Delete a budget",
+                "operationId": "deleteBudget",
+                "description": "Allows authenticated users to delete a budget by ID.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Budget deleted successfully."
+                    },
+                    "404": {
+                        "description": "Budget not found."
+                    },
+                    "401": {
+                        "description": "Unauthorized."
+                    }
+                }
             }
         },
         "/reports/monthly": {
@@ -754,6 +885,35 @@
                 "required": [
                     "id",
                     "userId",
+                    "category",
+                    "amount",
+                    "startDate",
+                    "endDate"
+                ]
+            },
+            "BudgetInput": {
+                "type": "object",
+                "properties": {
+                    "category": {
+                        "type": "string",
+                        "example": "Food"
+                    },
+                    "amount": {
+                        "type": "number",
+                        "example": 500
+                    },
+                    "startDate": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-03-01"
+                    },
+                    "endDate": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-03-31"
+                    }
+                },
+                "required": [
                     "category",
                     "amount",
                     "startDate",
