@@ -4,7 +4,7 @@ const asyncHandler = require('express-async-handler');
 // @desc Get all transactions for the user
 // @route GET /transactions
 const getTransactions = asyncHandler(async (req, res) => {
-    const transactions = await Transaction.find({ user: req.user_id });
+    const transactions = await Transaction.find({ user: req.user._id });
     if (!req.user) {
         res.status(404);
         throw new Error('User not found');

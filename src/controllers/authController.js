@@ -7,6 +7,7 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Generate JWT token
 const generateToken = (user) => {
+
     return jwt.sign(
         {
             id: user._id,
@@ -54,6 +55,8 @@ const signup = asyncHandler(async (req, res) => {
     // Check if user exists
     let user = await User.findOne({ email: userData.email });
 
+    const authToken = generateToken(user);  // || { _id: null, role: 'user' }
+
     if (!user) {
         user = await User.create({
             name: userData.name,
@@ -61,7 +64,11 @@ const signup = asyncHandler(async (req, res) => {
             oauthProvider,
             googleId: userData.googleId,
             role: 'user',
+            token: authToken,
         });
+    } else {
+        user.token = authToken;
+        await user.save();
     }
 
     res.status(201).json({
@@ -69,7 +76,7 @@ const signup = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        token: generateToken(user),
+        token: user.token,
     });
 });
 
@@ -118,4 +125,38 @@ const deleteProfile = asyncHandler(async (req, res) => {
     res.status(200).json({ message: 'User account deleted successfully' });
 });
 
-module.exports = { signup, getProfile, updateProfile, deleteProfile };
+// @desc Authenticate user and issue JWT
+// @route POST /auth/login
+const login = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        res.status(400);
+        throw new Error('Email and password are required');
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user || !(await user.matchPassword(password))) {
+        res.status(401);
+        throw new Error('Invalid credentials');
+    }
+
+    res.status(200).json({
+        _id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        token: authToken,
+    });
+});
+
+// @desc Logout user and invalidate token
+// @route GET /auth/logout
+const logout = asyncHandler(async (req, res) => {
+    // To invalidate the session, remove the token on client side
+    // Endpoint sends 200 status
+    res.status(200).json({ message: 'User logged out successfully' });
+});
+
+module.exports = { signup, getProfile, updateProfile, deleteProfile, login, logout };
