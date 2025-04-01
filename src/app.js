@@ -8,6 +8,7 @@ const swaggerDocument = require('./docs/swagger.json');
 const authRoutes = require('./routes/authRoutes');
 const transactionRoutes = require('./routes/transactionRoutes');
 const budgetRoutes = require('./routes/budgetRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
 const utilityRoutes = require('./routes/utiityRoutes');
 
 const PORT = process.env.PORT || 8080;
@@ -20,6 +21,7 @@ app
     .use('/auth', authRoutes)
     .use('/transactions', transactionRoutes)
     .use('/budgets', budgetRoutes)
+    .use('/categories', categoryRoutes)
     .use('/oauth2callback', utilityRoutes); // OAuth2 callback route to get tokens
 
 const startServer = async () => {

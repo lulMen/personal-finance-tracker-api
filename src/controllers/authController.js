@@ -7,7 +7,6 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Generate JWT token
 const generateToken = (user) => {
-
     return jwt.sign(
         {
             id: user._id,
@@ -55,7 +54,7 @@ const signup = asyncHandler(async (req, res) => {
     // Check if user exists
     let user = await User.findOne({ email: userData.email });
 
-    const authToken = generateToken(user);  // || { _id: null, role: 'user' }
+    const authToken = generateToken(user || { _id: null, role: 'user' });  // || { _id: null, role: 'user' }
 
     if (!user) {
         user = await User.create({
