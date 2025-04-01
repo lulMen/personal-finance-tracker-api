@@ -465,6 +465,47 @@
                         "description": "Unauthorized."
                     }
                 }
+            },
+            "post": {
+                "tags": [
+                    "category"
+                ],
+                "summary": "Create a new category",
+                "operationId": "createCategory",
+                "description": "Allows authenticated users to create a new category record.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CategoryInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Category created successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Category"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input."
+                    },
+                    "401": {
+                        "description": "Unauthorized."
+                    }
+                }
             }
         },
         "/budgets": {

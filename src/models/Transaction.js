@@ -9,21 +9,15 @@ const transactionSchema = new mongoose.Schema({
     date: {
         type: Date,
         required: true,
+        default: Date.now,
     },
     amount: {
         type: Number,
         required: true,
     },
     category: {
-        type: String,
-        enum: [
-            'Food',
-            'Transport',
-            'Shopping',
-            'Bills',
-            'Entertainment',
-            'Other',
-        ],
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
         required: true,
     },
     description: {
