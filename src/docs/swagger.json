@@ -721,7 +721,7 @@
                     },
                     "oauthToken": {
                         "type": "string",
-                        "example": "sample_oauth_token"
+                        "example": "TEST123"
                     }
                 },
                 "required": [
