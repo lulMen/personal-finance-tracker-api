@@ -4,6 +4,11 @@ const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const DUMMY_USER_DATA = {
+    name: "Dummy User",
+    email: "dummy@example.com",
+    googleId: "dummy_google_id",
+};
 
 // Generate JWT token
 const generateToken = (user) => {
@@ -27,35 +32,41 @@ const signup = asyncHandler(async (req, res) => {
 
     let userData;
 
-    // Verify OAuth token with provider
-    if (oauthProvider === 'google') {
-        try {
-            // Verify the ID token
-            const ticket = await client.verifyIdToken({
-                idToken: oauthToken,
-                audience: process.env.GOOGLE_CLIENT_ID,
-            });
-
-            const payload = ticket.getPayload();
-            userData = {
-                name: payload.name,
-                email: payload.email,
-                googleId: payload.sub,
-            };
-        } catch (err) {
-            res.status(401);
-            throw new Error('Invalid Google OAuth token: ', + err.message);
-        }
+    console.log(oauthToken);
+    console.log(process.env.DUMMY_OAUTH_TOKEN);
+    // Check if the provided token matches the dummy token
+    if (oauthToken === process.env.DUMMY_OAUTH_TOKEN) {
+        userData = DUMMY_USER_DATA;
     } else {
-        res.status(400);
-        throw new Error('Unsupported OAuth provider');
+        // Verify OAuth token with provider
+        if (oauthProvider === 'google') {
+            try {
+                // Verify the ID token
+                const ticket = await client.verifyIdToken({
+                    idToken: oauthToken,
+                    audience: process.env.GOOGLE_CLIENT_ID,
+                });
+
+                const payload = ticket.getPayload();
+                userData = {
+                    name: payload.name,
+                    email: payload.email,
+                    googleId: payload.sub,
+                };
+            } catch (err) {
+                res.status(401);
+                throw new Error('Invalid Google OAuth token: ', + err.message);
+            }
+        } else {
+            res.status(400);
+            throw new Error('Unsupported OAuth provider');
+        }
     }
 
     // Check if user exists
     let user = await User.findOne({ email: userData.email });
 
-    const authToken = generateToken(user || { _id: null, role: 'user' });  // || { _id: null, role: 'user' }
-
+    let authToken;
     if (!user) {
         user = await User.create({
             name: userData.name,
@@ -65,10 +76,10 @@ const signup = asyncHandler(async (req, res) => {
             role: 'user',
             token: authToken,
         });
-    } else {
-        user.token = authToken;
-        await user.save();
     }
+    authToken = generateToken(user);
+    user.token = authToken;
+    await user.save();
 
     res.status(201).json({
         _id: user.id,
