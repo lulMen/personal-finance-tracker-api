@@ -39,10 +39,6 @@
         {
             "name": "budget",
             "description": "Endpoints for managing user budgets."
-        },
-        {
-            "name": "report",
-            "description": "Endpoints for generating financial reports."
         }
     ],
     "paths": {
@@ -671,36 +667,6 @@
                     }
                 }
             }
-        },
-        "/reports/monthly": {
-            "get": {
-                "tags": [
-                    "report"
-                ],
-                "summary": "Generate a monthly spending report",
-                "operationId": "getMonthlyReport",
-                "description": "Generate a report summarizing monthly spending for the authenticated user.",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Monthly report generated successfully.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/MonthlyReport"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized."
-                    }
-                }
-            }
         }
     },
     "components": {
@@ -850,7 +816,8 @@
                     },
                     "category": {
                         "type": "string",
-                        "example": "Groceries"
+                        "example": "Groceries",
+                        "description": "The category name which will be resolved to a Category ObjectId"
                     },
                     "description": {
                         "type": "string",
@@ -868,8 +835,7 @@
                 "required": [
                     "amount",
                     "date",
-                    "category",
-                    "transactionType"
+                    "category"
                 ]
             },
             "Categories": {
@@ -960,9 +926,14 @@
             "BudgetInput": {
                 "type": "object",
                 "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Monthly Budget"
+                    },
                     "category": {
                         "type": "string",
-                        "example": "Food"
+                        "example": "Food",
+                        "description": "The category name that will be resolved to a Category ObjectId"
                     },
                     "amount": {
                         "type": "number",
@@ -971,41 +942,20 @@
                     "startDate": {
                         "type": "string",
                         "format": "date",
-                        "example": "2025-03-01"
+                        "example": "2025-04-01"
                     },
                     "endDate": {
                         "type": "string",
                         "format": "date",
-                        "example": "2025-03-31"
+                        "example": "2025-04-30"
                     }
                 },
                 "required": [
+                    "name",
                     "category",
                     "amount",
                     "startDate",
                     "endDate"
-                ]
-            },
-            "MonthlyReport": {
-                "type": "object",
-                "properties": {
-                    "totalIncome": {
-                        "type": "number",
-                        "example": 5000
-                    },
-                    "totalExpense": {
-                        "type": "number",
-                        "example": 3500
-                    },
-                    "netSavings": {
-                        "type": "number",
-                        "example": 1500
-                    }
-                },
-                "required": [
-                    "totalIncome",
-                    "totalExpense",
-                    "netSavings"
                 ]
             }
         }

@@ -1,6 +1,6 @@
 const Budget = require('../models/Budget');
-// const Transaction = require('../models/Transaction');
 const asyncHandler = require('express-async-handler');
+const { resolveCategoryId } = require('./utilityController');
 
 // @desc Get all budgets for a user
 // @route GET /budgets
@@ -17,19 +17,29 @@ const getBudgets = asyncHandler(async (req, res) => {
 const createBudget = asyncHandler(async (req, res) => {
     const {
         name,
+        category,
         amount,
         startDate,
         endDate,
     } = req.body;
 
-    if (!name || !amount || !startDate || !endDate) {
+    if (!name || !amount || !startDate || !endDate || !category) {
         res.status(400);
         throw new Error('All fields required');
+    }
+
+    let resolvedCategoryId;
+    try {
+        resolvedCategoryId = await resolveCategoryId(category, req.user._id);
+    } catch (error) {
+        res.status(400);
+        throw new Error(error.message);
     }
 
     const budget = await Budget.create({
         user: req.user._id,
         name,
+        category: resolvedCategoryId,
         amount,
         startDate,
         endDate,

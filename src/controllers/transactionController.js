@@ -33,12 +33,12 @@ const createTransaction = asyncHandler(async (req, res) => {
 
     if (!date || !amount || !category) {
         res.status(400);
-        throw new Error('Please provide date, amount, and category');
+        throw new Error('All fields required');
     }
 
-    let categoryId;
+    let resolvedCategoryId;
     try {
-        categoryId = await resolveCategoryId(category, req.user._id);
+        resolvedCategoryId = await resolveCategoryId(category, req.user._id);
     } catch (error) {
         res.status(400);
         throw new Error(error.message);
@@ -48,7 +48,7 @@ const createTransaction = asyncHandler(async (req, res) => {
         user: req.user._id,
         date,
         amount,
-        category: categoryId,
+        category: resolvedCategoryId,
         description,
     });
 

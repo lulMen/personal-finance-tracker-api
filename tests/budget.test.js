@@ -5,11 +5,13 @@ const mongoose = require('mongoose');
 const app = require('../src/app');
 const Budget = require('../src/models/Budget');
 const User = require('../src/models/User');
+const Category = require('../src/models/Category');
 
 describe('Budget Endpoints', () => {
     let token;
     let testUserId;
     let testBudgetId;
+    let testCategory;
 
     beforeAll(async () => {
         await mongoose.connect(process.env.MONGO_URI, {
@@ -24,10 +26,18 @@ describe('Budget Endpoints', () => {
 
         token = res.body.token;
         testUserId = res.body._id;
+
+        // Create a test category
+        testCategory = await Category.create({
+            user: testUserId,
+            name: "Groceries", // Must exactly match what the controller expects
+            type: "expense"
+        });
     });
 
     afterAll(async () => {
         await Budget.deleteMany({ user: testUserId });
+        await Category.deleteMany({ user: testUserId });
         await User.deleteOne({ _id: testUserId });
         await mongoose.connection.close();
     });
@@ -38,6 +48,7 @@ describe('Budget Endpoints', () => {
             .set('Authorization', `Bearer ${token}`)
             .send({
                 name: 'Test Budget',
+                category: testCategory.name,
                 amount: 1000,
                 startDate: '2025-04-01',
                 endDate: '2025-04-30',
