@@ -32,11 +32,10 @@ const signup = asyncHandler(async (req, res) => {
 
     let userData;
 
-    console.log(oauthToken);
-    console.log(process.env.DUMMY_OAUTH_TOKEN);
     // Check if the provided token matches the dummy token
     if (oauthToken === process.env.DUMMY_OAUTH_TOKEN) {
         userData = DUMMY_USER_DATA;
+        // console.log(userData);
     } else {
         // Verify OAuth token with provider
         if (oauthProvider === 'google') {
@@ -65,9 +64,13 @@ const signup = asyncHandler(async (req, res) => {
 
     // Check if user exists
     let user = await User.findOne({ email: userData.email });
+    // console.log(user);
+
+    // console.log(User);
 
     let authToken;
     if (!user) {
+        console.log(user);
         user = await User.create({
             name: userData.name,
             email: userData.email,

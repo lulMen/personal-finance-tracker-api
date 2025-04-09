@@ -1,41 +1,25 @@
 require('dotenv').config();
-
 const express = require('express');
-const mongoose = require('mongoose');
+const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
-
 const swaggerDocument = require('./docs/swagger.json');
+
 const authRoutes = require('./routes/authRoutes');
 const transactionRoutes = require('./routes/transactionRoutes');
 const budgetRoutes = require('./routes/budgetRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
-const utilityRoutes = require('./routes/utiityRoutes');
+const utilityRoutes = require('./routes/utiityRoutes'); // Assuming this is correct
 
-const PORT = process.env.PORT || 8080;
 const app = express();
 
-app
-    .use(express.json())
-    .use(express.urlencoded({ extended: true }))
-    .use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-    .use('/auth', authRoutes)
-    .use('/transactions', transactionRoutes)
-    .use('/budgets', budgetRoutes)
-    .use('/categories', categoryRoutes)
-    .use('/oauth2callback', utilityRoutes); // OAuth2 callback route to get tokens
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use('/auth', authRoutes);
+app.use('/transactions', transactionRoutes);
+app.use('/budgets', budgetRoutes);
+app.use('/categories', categoryRoutes);
+app.use('/oauth2callback', utilityRoutes);
 
-const startServer = async () => {
-    try {
-        await mongoose.connect(process.env.MONGO_URI);
-        console.log('Connected to MongoDB using Mongoose');
-
-        app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
-        });
-    } catch (err) {
-        console.log(`Database connection error: ${err.message}`);
-        process.exit(1);
-    }
-};
-
-startServer();
+module.exports = app;
