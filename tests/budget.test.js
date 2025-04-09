@@ -30,7 +30,7 @@ describe('Budget Endpoints', () => {
         // Create a test category
         testCategory = await Category.create({
             user: testUserId,
-            name: "Groceries", // Must exactly match what the controller expects
+            name: "Groceries",
             type: "expense"
         });
     });

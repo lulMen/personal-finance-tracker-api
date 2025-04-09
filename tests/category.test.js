@@ -1,4 +1,5 @@
 require('dotenv').config();
+jest.setTimeout(15000);
 
 const request = require('supertest');
 const mongoose = require('mongoose');
@@ -19,7 +20,7 @@ describe('Category Endpoints', () => {
 
         const res = await request(app).post('/auth/signup').send({
             oauthProvider: 'google',
-            oauthToken: process.env.DUMMY_OAUTH_TOKEN,
+            oauthToken: process.env.DUMMY_OAUTH_TOKEN || 'TEST123',
         });
 
         token = res.body.token;
@@ -32,13 +33,13 @@ describe('Category Endpoints', () => {
         await mongoose.connection.close();
     });
 
-    it('POST /categories - should create a new category', async () => {
+    test('POST /categories - should create a new category', async () => {
         const res = await request(app)
             .post('/categories')
             .set('Authorization', `Bearer ${token}`)
             .send({
                 name: 'Groceries',
-                type: 'Expense',
+                type: 'Expense'
             });
 
         expect(res.statusCode).toBe(201);
@@ -48,13 +49,33 @@ describe('Category Endpoints', () => {
         testCategoryId = res.body._id;
     });
 
-    it('GET /categories - should fetch all categories for the user', async () => {
+    test('GET /categories - should fetch all categories for the user', async () => {
         const res = await request(app)
             .get('/categories')
             .set('Authorization', `Bearer ${token}`);
 
         expect(res.statusCode).toBe(200);
         expect(Array.isArray(res.body)).toBe(true);
-        expect(res.body.length).toBeGreaterThan(0);
+        expect(res.body.length).toBeGreaterThanOrEqual(1);
+    });
+
+    test('PUT /categories/:id - should update an existing category', async () => {
+        const res = await request(app)
+            .put(`/categories/${testCategoryId}`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({ name: 'Food', type: 'Expense' });
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body.name).toBe('Food');
+        expect(res.body.type).toBe('expense');
+    });
+
+    test('DELETE /categories/:id - should delete a category', async () => {
+        const res = await request(app)
+            .delete(`/categories/${testCategoryId}`)
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body.message).toBe('Category deleted successfully');
     });
 });

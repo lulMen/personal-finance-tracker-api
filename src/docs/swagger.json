@@ -504,6 +504,111 @@
                 }
             }
         },
+        "/categories/{id}": {
+            "put": {
+                "tags": [
+                    "category"
+                ],
+                "summary": "Update an existing category",
+                "operationId": "updateCategory",
+                "description": "Allows authenticated users to update a category by its ID.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the category to update",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CategoryInput"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Category updated successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Category"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input."
+                    },
+                    "401": {
+                        "description": "Unauthorized."
+                    },
+                    "404": {
+                        "description": "Category not found."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "category"
+                ],
+                "summary": "Delete a category",
+                "operationId": "deleteCategory",
+                "description": "Allows authenticated users to delete a category by its ID.",
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "description": "ID of the category to delete",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Category deleted successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Category deleted successfully."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized."
+                    },
+                    "404": {
+                        "description": "Category not found."
+                    }
+                }
+            }
+        },
         "/budgets": {
             "get": {
                 "tags": [
@@ -838,7 +943,7 @@
                     "category"
                 ]
             },
-            "Categories": {
+            "Category": {
                 "type": "object",
                 "properties": {
                     "id": {
@@ -848,6 +953,14 @@
                     "name": {
                         "type": "string",
                         "example": "Groceries"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "expense"
+                    },
+                    "user": {
+                        "type": "string",
+                        "example": "643e7c23f6df9b1f3c9a5678"
                     },
                     "description": {
                         "type": "string",
@@ -868,15 +981,8 @@
                     },
                     "type": {
                         "type": "string",
-                        "enum": [
-                            "income",
-                            "expense"
-                        ],
-                        "example": "expense"
-                    },
-                    "description": {
-                        "type": "string",
-                        "example": "Expenses related to food and groceries"
+                        "example": "expense",
+                        "description": "Must be either 'expense' or 'income'."
                     }
                 },
                 "required": [
