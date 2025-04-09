@@ -7,8 +7,14 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/app.js "
+    "test": "jest --coverage --runInBand --detectOpenHandles",
+    "start": "nodemon server.js "
+  },
+  "jest": {
+    "globalTeardown": "./tests/teardown.js",
+    "testEnvironment": "node",
+    "verbose": true,
+    "coverageDirectory": "./coverage"
   },
   "dependencies": {
     "axios": "^1.8.4",
@@ -25,6 +31,8 @@
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.9",
+    "supertest": "^7.1.0"
   }
 }
