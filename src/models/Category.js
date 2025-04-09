@@ -13,12 +13,8 @@ const categorySchema = new mongoose.Schema({
     type: {
         type: String,
         enum: [
-            'Food',
-            'Transport',
-            'Shopping',
-            'Bills',
-            'Entertainment',
-            'Other',
+            'expense',
+            'income'
         ],
         required: true,
     },

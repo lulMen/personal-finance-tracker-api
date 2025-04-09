@@ -6,7 +6,7 @@ const asyncHandler = require('express-async-handler');
 const getCategories = asyncHandler(async (req, res) => {
     const categories = await Category
         .find({ user: req.user._id })
-        .populate('categories');
+        .populate('name');
 
     res.status(200).json(categories);
 });
@@ -27,10 +27,11 @@ const createCategory = asyncHandler(async (req, res) => {
         throw new Error('Category already exists');
     }
 
+    const normalizedType = type.toLowerCase();
     const category = await Category.create({
         user: req.user._id,
         name,
-        type,
+        type: normalizedType,
     });
 
     res.status(201).json(category);

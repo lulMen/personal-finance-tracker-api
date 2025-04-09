@@ -40,7 +40,6 @@ const signup = asyncHandler(async (req, res) => {
         // Verify OAuth token with provider
         if (oauthProvider === 'google') {
             try {
-                // Verify the ID token
                 const ticket = await client.verifyIdToken({
                     idToken: oauthToken,
                     audience: process.env.GOOGLE_CLIENT_ID,
@@ -64,13 +63,9 @@ const signup = asyncHandler(async (req, res) => {
 
     // Check if user exists
     let user = await User.findOne({ email: userData.email });
-    // console.log(user);
-
-    // console.log(User);
 
     let authToken;
     if (!user) {
-        console.log(user);
         user = await User.create({
             name: userData.name,
             email: userData.email,
@@ -141,35 +136,71 @@ const deleteProfile = asyncHandler(async (req, res) => {
 // @desc Authenticate user and issue JWT
 // @route POST /auth/login
 const login = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+    const { oauthProvider, oauthToken } = req.body;
 
-    if (!email || !password) {
+    if (!oauthProvider || !oauthToken) {
         res.status(400);
-        throw new Error('Email and password are required');
+        throw new Error('Oauth provider and token are required');
     }
 
-    const user = await User.findOne({ email });
+    let userData;
 
-    if (!user || !(await user.matchPassword(password))) {
-        res.status(401);
-        throw new Error('Invalid credentials');
+    // Check if dummy token is provided
+    if (oauthToken === process.env.DUMMY_OAUTH_TOKEN) {
+        userData = DUMMY_USER_DATA;
+    } else {
+        if (oauthProvider === 'google') {
+            try {
+                const ticket = await client.verifyIdToken({
+                    idToken: oauthToken,
+                    audience: process.env.GOOGLE_CLIENT_ID,
+                });
+                const payload = ticket.getPayload();
+                userData = {
+                    name: payload.name,
+                    email: payload.email,
+                    googleId: payload.sub,
+                };
+            } catch (err) {
+                res.status(401);
+                throw new Error('Invalid Google OAuth token: ' + err.message);
+            }
+        } else {
+            res.status(400);
+            throw new Error('Unsupported OAuth provider');
+        }
     }
+
+    const user = await User.findOne({ email: userData.email });
+    if (!user) {
+        res.status(404);
+        throw new Error('User not found');
+    }
+    const authToken = generateToken(user);
+    user.token = authToken;
+    await user.save();
 
     res.status(200).json({
         _id: user.id,
         name: user.name,
         email: user.email,
         role: user.role,
-        token: authToken,
+        token: user.token,
     });
 });
 
 // @desc Logout user and invalidate token
 // @route GET /auth/logout
 const logout = asyncHandler(async (req, res) => {
-    // To invalidate the session, remove the token on client side
-    // Endpoint sends 200 status
+    // Logout is handled on the client by discarding the token
     res.status(200).json({ message: 'User logged out successfully' });
 });
 
-module.exports = { signup, getProfile, updateProfile, deleteProfile, login, logout };
+module.exports = {
+    signup,
+    getProfile,
+    updateProfile,
+    deleteProfile,
+    login,
+    logout
+};
