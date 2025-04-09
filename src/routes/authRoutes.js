@@ -14,11 +14,11 @@ const router = express.Router();
 // Public routes
 router.post('/signup', signup);
 router.post('/login', login);
+router.get('/logout', logout);
 
 // Protected routes
 router.get('/profile', protect, getProfile);
 router.put('/profile', protect, updateProfile);
 router.delete('/profile', protect, deleteProfile);
-router.get('/logout', protect, logout);
 
 module.exports = router;
