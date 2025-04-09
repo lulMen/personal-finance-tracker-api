@@ -86,9 +86,9 @@
                 "tags": [
                     "user"
                 ],
-                "summary": "Authenticate user and issue JWT",
+                "summary": "Authenticate user and issue JWT via OAuth",
                 "operationId": "loginUser",
-                "description": "Authenticate the user via OAuth and return a JSON Web Token (JWT) containing role information. The token is used\nto ensure users only access their own data.\n",
+                "description": "Authenticate the user via OAuth and return a JSON Web Token (JWT) containing role information. The token is used to ensure users only access their own data.",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -117,7 +117,7 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized – Invalid credentials."
+                        "description": "Unauthorized – Invalid OAuth credentials."
                     }
                 }
             }
@@ -730,6 +730,10 @@
                 ]
             },
             "UserLogin": {
+                "required": [
+                    "oauthProvider",
+                    "oauthToken"
+                ],
                 "type": "object",
                 "properties": {
                     "oauthProvider": {
@@ -738,13 +742,9 @@
                     },
                     "oauthToken": {
                         "type": "string",
-                        "example": "sample_oauth_token"
+                        "example": "TEST123"
                     }
-                },
-                "required": [
-                    "oauthProvider",
-                    "oauthToken"
-                ]
+                }
             },
             "UserUpdate": {
                 "type": "object",
@@ -872,7 +872,7 @@
                     "transactionType"
                 ]
             },
-            "Category": {
+            "Categories": {
                 "type": "object",
                 "properties": {
                     "id": {
@@ -891,6 +891,31 @@
                 "required": [
                     "id",
                     "name"
+                ]
+            },
+            "CategoryInput": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Groceries"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "income",
+                            "expense"
+                        ],
+                        "example": "expense"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Expenses related to food and groceries"
+                    }
+                },
+                "required": [
+                    "name",
+                    "type"
                 ]
             },
             "Budget": {

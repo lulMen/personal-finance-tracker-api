@@ -1,5 +1,8 @@
 const asyncHandler = require('express-async-handler');
 const axios = require('axios');
+const mongoose = require('mongoose');
+const Category = require('../../src/models/Category');
+
 
 // Get authorization tokens
 const exchangeToken = asyncHandler(async (req, res) => {
@@ -37,4 +40,17 @@ const exchangeToken = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { exchangeToken, };
+const resolveCategoryId = async (categoryInput, userId) => {
+    if (mongoose.Types.ObjectId.isValid(categoryInput)) {
+        return categoryInput;
+    } else {
+        // If categoryInput is not a valid ObjectId, assume it's a name and find the category for this user.
+        const foundCategory = await Category.findOne({ name: categoryInput, user: userId });
+        if (!foundCategory) {
+            throw new Error('Invalid category: not found');
+        }
+        return foundCategory._id;
+    }
+};
+
+module.exports = { exchangeToken, resolveCategoryId };

@@ -1,5 +1,6 @@
 const Transaction = require('../models/Transaction');
 const asyncHandler = require('express-async-handler');
+const { resolveCategoryId } = require('./utilityController');
 
 // @desc Get all transactions for the user
 // @route GET /transactions
@@ -35,11 +36,19 @@ const createTransaction = asyncHandler(async (req, res) => {
         throw new Error('Please provide date, amount, and category');
     }
 
+    let categoryId;
+    try {
+        categoryId = await resolveCategoryId(category, req.user._id);
+    } catch (error) {
+        res.status(400);
+        throw new Error(error.message);
+    }
+
     const transaction = await Transaction.create({
         user: req.user._id,
         date,
         amount,
-        category,
+        category: categoryId,
         description,
     });
 
@@ -49,16 +58,26 @@ const createTransaction = asyncHandler(async (req, res) => {
 // @desc Update an existing transaction
 // @route PUT /transaction/:id
 const updateTransaction = asyncHandler(async (req, res) => {
+
     const transaction = await Transaction.findById(req.params.id);
+
 
     if (!transaction || transaction.user.toString() !== req.user._id.toString()) {
         res.status(404);
         throw new Error('Transaction not found');
     }
 
+    if (req.body.category) {
+        try {
+            transaction.category = await resolveCategoryId(req.body.category, req.user._id);
+        } catch (error) {
+            res.status(400);
+            throw new Error(error.message);
+        }
+    }
+
     transaction.date = req.body.date || transaction.date;
     transaction.amount = req.body.amount || transaction.amount;
-    transaction.category = req.body.category || transaction.category;
     transaction.description = req.body.description || transaction.description;
 
     const updatedTransaction = await transaction.save();

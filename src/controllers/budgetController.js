@@ -43,8 +43,7 @@ const createBudget = asyncHandler(async (req, res) => {
 // @route PUT /budgets/:id
 const updateBudget = asyncHandler(async (req, res) => {
     const budget = await Budget.findById(req.params.id);
-
-    if (!budget || budget.user.toString() !== req.user._id_.toString()) {
+    if (!budget || budget.user.toString() !== req.user._id.toString()) {
         res.status(404);
         throw new Error('Budget not found');
     }
